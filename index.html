@@ -41,12 +41,12 @@
         .logo-nav {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 107, 107, 0.2), rgba(78, 205, 196, 0.2));
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 107, 107, 0.15), rgba(78, 205, 196, 0.15));
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid rgba(255, 215, 0, 0.5);
+            border: 2px solid rgba(255, 215, 0, 0.4);
             position: relative;
             overflow: hidden;
         }
@@ -56,7 +56,7 @@
             position: absolute;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.05), transparent);
             animation: shine 3s infinite;
         }
 
@@ -64,7 +64,7 @@
             font-size: 1.2rem;
             font-weight: bold;
             color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
             z-index: 1;
         }
 
@@ -239,7 +239,7 @@
         .feature-card:hover {
             transform: translateY(-15px) scale(1.05);
             border-color: #ffd700;
-            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 20px 50px rgba(255, 215, 0, 0.25);
         }
 
         .feature-icon {
@@ -279,7 +279,7 @@
             text-decoration: none;
             border-radius: 50px;
             transition: all 0.3s;
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.2);
             animation: fadeIn 1s ease-out 0.9s both;
             position: relative;
             overflow: hidden;
@@ -302,7 +302,7 @@
 
         .cta-button:hover {
             transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.3);
         }
 
         section {
@@ -331,8 +331,8 @@
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 3rem;
-            border: 2px solid rgba(255, 215, 0, 0.2);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 215, 0, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .about-content p {
@@ -360,7 +360,7 @@
 
         .team-member:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(78, 205, 196, 0.3);
+            box-shadow: 0 15px 30px rgba(78, 205, 196, 0.2);
             border-color: #4ecdc4;
         }
 
@@ -392,7 +392,7 @@
 
         .partner-card:hover {
             transform: scale(1.05);
-            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.3);
+            box-shadow: 0 15px 30px rgba(255, 107, 107, 0.2);
         }
 
         .partner-card h3 {
@@ -428,7 +428,7 @@
 
         .price-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 50px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.2);
             border-color: #ffd700;
         }
 
@@ -591,7 +591,7 @@
                 </div>
             </div>
 
-            <a href="#elerhetoseg" class="cta-button" onclick="showSection('#elerhetoseg'); event.preventDefault();">Kérjen ajánlatot!</a>
+            <a href="mailto:info@partyschedule.hu?subject=Ajánlatkérés&body=Tisztelt PartySchedule Csapat,%0D%0A%0D%0ARendezvényemhez szeretnék ajánlatot kérni.%0D%0A%0D%0ARendezvény típusa:%0D%0AIdőpont:%0D%0AHelyszín:%0D%0AVendégek száma:%0D%0A%0D%0AÜdvözlettel" class="cta-button">Kérjen ajánlatot!</a>
         </div>
     </div>
 
@@ -687,6 +687,9 @@
                     <p style="margin-top: 1rem;">
                         <a href="tel:+36705168766">📞 06-70-516-8766</a>
                     </p>
+                    <p style="margin-top: 0.5rem;">
+                        <a href="mailto:szabo.barnabas@partyschedule.hu">✉️ szabo.barnabas@partyschedule.hu</a>
+                    </p>
                 </div>
                 <div class="contact-person">
                     <h3>Nándori Milán</h3>
@@ -694,10 +697,13 @@
                     <p style="margin-top: 1rem;">
                         <a href="tel:+36706755427">📞 06-70-675-5427</a>
                     </p>
+                    <p style="margin-top: 0.5rem;">
+                        <a href="mailto:nandori.milan@partyschedule.hu">✉️ nandori.milan@partyschedule.hu</a>
+                    </p>
                 </div>
             </div>
             <p style="text-align: center; margin-top: 2rem; font-size: 1.1rem; opacity: 0.8;">
-                Hívjon minket bizalommal, és tegye emlékezetessé következő rendezvényét!
+                Hívjon vagy írjon minket bizalommal, és tegye emlékezetessé következő rendezvényét!
             </p>
         </div>
     </section>
