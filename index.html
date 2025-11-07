@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PartySchedule - Rendezvényszervezés</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-blue: #0589ce;
+            --dark-grey: #3e3d3c;
+            --neon-cyan: #00f6ff;
+            --neon-pink: #ff00ff;
+            --electric-purple: #8b00ff;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes glow-pulse {
+            0%, 100% { box-shadow: 0 0 20px var(--primary-blue), 0 0 40px var(--primary-blue); }
+            50% { box-shadow: 0 0 40px var(--neon-cyan), 0 0 80px var(--neon-cyan); }
+        }
+        
+        @keyframes neon-flicker {
+            0%, 100% { opacity: 1; text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan), 0 0 30px var(--primary-blue); }
+            50% { opacity: 0.8; text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan), 0 0 15px var(--primary-blue); }
+        }
+        
+        .navbar {
+            background: rgba(62, 61, 60, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid var(--primary-blue);
+            box-shadow: 0 4px 30px rgba(5, 137, 206, 0.3);
+        }
+        
+        .navbar-brand {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--neon-cyan) !important;
+            text-shadow: 0 0 20px var(--neon-cyan), 0 0 40px var(--primary-blue);
+            animation: neon-flicker 3s infinite;
+            letter-spacing: 2px;
+        }
+        
+        .nav-link {
+            color: #fff !important;
+            font-weight: 600;
+            margin: 0 15px;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--neon-cyan));
+            transition: all 0.4s;
+            transform: translateX(-50%);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .nav-link:hover {
+            color: var(--neon-cyan) !important;
+            text-shadow: 0 0 10px var(--neon-cyan);
+            transform: translateY(-3px);
+        }
+        
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--neon-cyan);
+            margin-left: 30px;
+            transition: all 0.3s;
+        }
+        
+        .cart-icon:hover {
+            transform: scale(1.2);
+            color: var(--neon-pink);
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--neon-pink);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .cart-sidebar {
+            position: fixed;
+            right: -500px;
+            top: 0;
+            width: 500px;
+            height: 100vh;
+            background: linear-gradient(135deg, rgba(62,61,60,0.98), rgba(5,137,206,0.3));
+            backdrop-filter: blur(20px);
+            border-left: 3px solid var(--neon-cyan);
+            box-shadow: -5px 0 30px rgba(0,246,255,0.5);
+            z-index: 9999;
+            transition: right 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            overflow-y: auto;
+        }
+        
+        .cart-sidebar.open {
+            right: 0;
+        }
+        
+        .cart-header {
+            padding: 30px;
+            border-bottom: 2px solid var(--neon-cyan);
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-header h2 {
+            color: var(--neon-cyan);
+            font-size: 2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .close-cart {
+            background: none;
+            border: none;
+            color: var(--neon-cyan);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .close-cart:hover {
+            color: var(--neon-pink);
+            transform: rotate(90deg);
+        }
+        
+        .cart-items {
+            padding: 20px;
+        }
+        
+        .cart-item {
+            background: rgba(0,0,0,0.5);
+            border: 2px solid var(--primary-blue);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        
+        .cart-item:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0,246,255,0.4);
+        }
+        
+        .cart-item h4 {
+            color: var(--neon-cyan);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+        
+        .cart-item-price {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .remove-item {
+            background: linear-gradient(135deg, #ff0055, #ff5500);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .remove-item:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255,0,85,0.6);
+        }
+        
+        .cart-total {
+            padding: 30px;
+            border-top: 2px solid var(--neon-cyan);
+            background: rgba(0,0,0,0.7);
+            position: sticky;
+            bottom: 0;
+        }
+        
+        .cart-total h3 {
+            color: var(--neon-cyan);
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: 900;
+        }
+        
+        .checkout-btn {
+            background: linear-gradient(135deg, var(--primary-blue), var(--neon-cyan));
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            border: none;
+            border-radius: 50px;
+            width: 100%;
+            transition: all 0.4s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+        }
+        
+        .checkout-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(0,246,255,0.8);
+        }
+        
+        .checkout-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .checkout-overlay.active {
+            display: flex;
+        }
+        
+        .checkout-panel {
+            background: linear-gradient(135deg, rgba(62,61,60,0.98), rgba(5,137,206,0.3));
+            border: 3px solid var(--neon-cyan);
+            border-radius: 30px;
+            padding: 50px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 60px rgba(0,246,255,0.6);
+        }
+        
+        .checkout-panel h2 {
+            color: var(--neon-cyan);
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            color: var(--neon-cyan);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: block;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .payment-method {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .payment-option {
+            flex: 1;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid var(--primary-blue);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .payment-option:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0,246,255,0.4);
+        }
+        
+        .payment-option.selected {
+            border-color: var(--neon-cyan);
+            background: rgba(0,246,255,0.2);
+            box-shadow: 0 0 30px rgba(0,246,255,0.6);
+        }
+        
+        .payment-option i {
+            font-size: 2.5rem;
+            color: var(--neon-cyan);
+            margin-bottom: 10px;
+        }
+        
+        .payment-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .cancel-btn {
+            background: linear-gradient(135deg, #ff0055, #ff5500);
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            border: none;
+            border-radius: 50px;
+            flex: 1;
+            transition: all 0.4s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+        }
+        
+        .cancel-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(255,0,85,0.8);
+        }
+        
+        .success-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10001;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .success-overlay.active {
+            display: flex;
+        }
+        
+        .success-message {
+            background: linear-gradient(135deg, rgba(0,246,255,0.3), rgba(5,137,206,0.3));
+            border: 3px solid var(--neon-cyan);
+            border-radius: 30px;
+            padding: 60px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 0 80px rgba(0,246,255,0.8);
+        }
+        
+        .success-message i {
+            font-size: 5rem;
+            color: var(--neon-cyan);
+            margin-bottom: 30px;
+            animation: float 2s ease-in-out infinite;
+        }
+        
+        .success-message h2 {
+            color: var(--neon-cyan);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        
+        .success-message p {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 30px;
+        }
+        
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1920');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(5,137,206,0.3), rgba(0,246,255,0.3), rgba(139,0,255,0.3));
+            background-size: 400% 400%;
+            animation: gradient-shift 15s ease infinite;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        
+        .hero-section h1 {
+            font-size: 6rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--neon-cyan), var(--primary-blue), var(--electric-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 80px rgba(5,137,206,0.8);
+            margin-bottom: 30px;
+            animation: float 4s ease-in-out infinite;
+            letter-spacing: 5px;
+        }
+        
+        .hero-section p {
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px var(--neon-cyan), 0 0 40px var(--primary-blue);
+            animation: neon-flicker 4s infinite;
+        }
+        
+        .btn-hero {
+            background: linear-gradient(135deg, var(--primary-blue), var(--neon-cyan));
+            color: white;
+            padding: 20px 60px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            border: none;
+            border-radius: 50px;
+            margin-top: 40px;
+            transition: all 0.4s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(5,137,206,0.6);
+            cursor: pointer;
+        }
+        
+        .btn-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-hero:hover::before {
+            left: 100%;
+        }
+        
+        .btn-hero:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 0 60px rgba(0,246,255,0.8), 0 10px 40px rgba(5,137,206,0.4);
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 4rem;
+            font-weight: 900;
+            margin: 100px 0 80px;
+            background: linear-gradient(45deg, var(--primary-blue), var(--neon-cyan), var(--electric-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--neon-cyan));
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+        
+        .service-box {
+            background: linear-gradient(135deg, rgba(62,61,60,0.9), rgba(5,137,206,0.1));
+            border: 2px solid var(--primary-blue);
+            border-radius: 25px;
+            padding: 40px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(5,137,206,0.2) 0%, transparent 70%);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+        
+        .service-box:hover::before {
+            opacity: 1;
+            transform: rotate(180deg);
+        }
+        
+        .service-box:hover {
+            transform: translateY(-20px) scale(1.05);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 20px 60px rgba(5,137,206,0.6), 0 0 40px rgba(0,246,255,0.4);
+            animation: glow-pulse 2s infinite;
+        }
+        
+        .service-box i {
+            font-size: 4rem;
+            background: linear-gradient(45deg, var(--primary-blue), var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            display: block;
+            transition: all 0.4s;
+        }
+        
+        .service-box:hover i {
+            transform: scale(1.3) rotateY(360deg);
+        }
+        
+        .service-box h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+        
+        .service-box p {
+            color: #ccc;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        
+        .gallery-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        
+        .gallery-img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            filter: brightness(0.7) saturate(1.2);
+        }
+        
+        .gallery-container:hover .gallery-img {
+            transform: scale(1.2) rotate(3deg);
+            filter: brightness(1) saturate(1.5);
+        }
+        
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(5,137,206,0.8), rgba(0,246,255,0.8));
+            opacity: 0;
+            transition: all 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .gallery-container:hover .gallery-overlay {
+            opacity: 1;
+        }
+        
+        .gallery-overlay i {
+            font-size: 4rem;
+            color: white;
+            transform: scale(0);
+            transition: all 0.5s;
+        }
+        
+        .gallery-container:hover .gallery-overlay i {
+            transform: scale(1) rotate(360deg);
+        }
+        
+        .price-card {
+            background: linear-gradient(135deg, rgba(62,61,60,0.95), rgba(5,137,206,0.2));
+            border: 3px solid var(--primary-blue);
+            border-radius: 30px;
+            padding: 50px 40px;
+            margin: 30px 0;
+            backdrop-filter: blur(20px);
+            transition: all 0.5s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .price-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary-blue), var(--neon-cyan), var(--electric-purple), var(--neon-pink));
+            background-size: 400% 400%;
+            border-radius: 30px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s;
+            animation: gradient-shift 4s ease infinite;
+        }
+        
+        .price-card:hover::before {
+            opacity: 1;
+        }
+        
+        .price-card:hover {
+            transform: translateY(-20px) scale(1.05);
+            box-shadow: 0 30px 80px rgba(5,137,206,0.7);
+        }
+        
+        .price-card.featured {
+            border-color: var(--neon-cyan);
+            background: linear-gradient(135deg, rgba(5,137,206,0.3), rgba(62,61,60,0.95));
+        }
+        
+        .price-card.featured::before {
+            opacity: 0.5;
+        }
+        
+        .price-card h3 {
+            font-size: 2.5rem;
+            color: var(--neon-cyan);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 900;
+        }
+        
+        .price-card .price {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--neon-cyan), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 30px 0;
+        }
+        
+        .price-card ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+        
+        .price-card ul li {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(5,137,206,0.3);
+            color: #ccc;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        
+        .price-card ul li:hover {
+            padding-left: 10px;
+            color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+        }
+        
+        .price-card ul li i {
+            color: var(--neon-cyan);
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .contact-box {
+            background: linear-gradient(135deg, rgba(5,137,206,0.9), rgba(62,61,60,0.9));
+            border: 2px solid var(--neon-cyan);
+            color: white;
+            padding: 50px;
+            border-radius: 25px;
+            margin: 30px 0;
+            backdrop-filter: blur(20px);
+            transition: all 0.5s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .contact-box::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(0,246,255,0.3) 0%, transparent 70%);
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .contact-box:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,246,255,0.5);
+        }
+        
+        .contact-box i {
+            font-size: 3.5rem;
+            margin-bottom: 25px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 30px var(--neon-cyan);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .contact-box h4 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+        
+        .contact-box p {
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+        
+        .form-control {
+            background: rgba(0,0,0,0.5);
+            border: 2px solid var(--primary-blue);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            transition: all 0.4s;
+        }
+        
+        .form-control:focus {
+            background: rgba(0,0,0,0.7);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0,246,255,0.4);
+            color: white;
+        }
+        
+        .form-control::placeholder {
+            color: #888;
+        }
+        
+        footer {
+            background: linear-gradient(135deg, var(--dark-grey), #000);
+            border-top: 3px solid var(--primary-blue);
+            padding: 60px 0;
+            margin-top: 100px;
+            position: relative;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--neon-cyan), var(--electric-purple));
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+        
+        footer h4 {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--primary-blue), var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .social-icons {
+            margin: 30px 0;
+        }
+        
+        .social-icons a {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--neon-cyan));
+            color: white;
+            font-size: 1.8rem;
+            margin: 0 15px;
+            border-radius: 50%;
+            transition: all 0.4s;
+            box-shadow: 0 5px 20px rgba(5,137,206,0.4);
+        }
+        
+        .social-icons a:hover {
+            transform: translateY(-10px) scale(1.2) rotate(360deg);
+            box-shadow: 0 10px 40px rgba(0,246,255,0.6);
+            background: linear-gradient(135deg, var(--neon-cyan), var(--electric-purple));
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-cyan);
+            animation: particle-float 15s linear infinite;
+        }
+        
+        @keyframes particle-float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+        
+        .glitch-effect {
+            position: relative;
+        }
+        
+        .glitch-effect::before,
+        .glitch-effect::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .glitch-effect::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--neon-cyan);
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+        }
+        
+        .glitch-effect::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--electric-purple);
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+        
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 90px, 0); }
+            100% { clip: rect(30px, 9999px, 60px, 0); }
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .empty-cart i {
+            font-size: 5rem;
+            color: var(--neon-cyan);
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-cart p {
+            color: #888;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="particles" id="particles"></div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-bolt"></i> PARTYSCHEDULE</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#home">Főoldal</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#services">Szolgáltatások</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#gallery">Galéria</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#prices">Árlista</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Kapcsolat</a></li>
+                </ul>
+                <div class="cart-icon" onclick="toggleCart()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2><i class="fas fa-shopping-cart"></i> Kosár</h2>
+            <button class="close-cart" onclick="toggleCart()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="empty-cart">
+                <i class="fas fa-shopping-cart"></i>
+                <p>A kosár üres</p>
+            </div>
+        </div>
+        <div class="cart-total" id="cartTotal" style="display: none;">
+            <h3>Összesen: <span id="totalPrice">0</span> Ft</h3>
+            <button class="checkout-btn" onclick="openCheckout()">
+                <i class="fas fa-credit-card"></i> Fizetés
+            </button>
+        </div>
+    </div>
+
+    <div class="checkout-overlay" id="checkoutOverlay">
+        <div class="checkout-panel">
+            <h2><i class="fas fa-credit-card"></i> Fizetés</h2>
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label>Teljes név</label>
+                    <input type="text" class="form-control" required placeholder="Kovács János">
+                </div>
+                <div class="form-group">
+                    <label>Email cím</label>
+                    <input type="email" class="form-control" required placeholder="pelda@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Telefonszám</label>
+                    <input type="tel" class="form-control" required placeholder="+36 30 123 4567">
+                </div>
+                <div class="form-group">
+                    <label>Rendezvény dátuma</label>
+                    <input type="date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Címe</label>
+                    <input type="text" class="form-control" required placeholder="1051 Budapest, Deák Ferenc utca 15.">
+                </div>
+                <div class="form-group">
+                    <label>Fizetési mód</label>
+                    <div class="payment-method">
+                        <div class="payment-option" onclick="selectPayment('card')">
+                            <i class="fas fa-credit-card"></i>
+                            <p>Bankkártya</p>
+                        </div>
+                        <div class="payment-option" onclick="selectPayment('transfer')">
+                            <i class="fas fa-money-check-alt"></i>
+                            <p>Átutalás</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Megjegyzés (opcionális)</label>
+                    <textarea class="form-control" rows="3" placeholder="További információk..."></textarea>
+                </div>
+                <div class="payment-buttons">
+                    <button type="button" class="cancel-btn" onclick="closeCheckout()">
+                        <i class="fas fa-times"></i> Mégse
+                    </button>
+                    <button type="submit" class="checkout-btn">
+                        <i class="fas fa-check"></i> Megrendelés
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-message">
+            <i class="fas fa-check-circle"></i>
+            <h2>Sikeres megrendelés!</h2>
+            <p>Köszönjük megrendelését! Hamarosan felvesszük Önnel a kapcsolatot.</p>
+            <button class="btn-hero" onclick="closeSuccess()">
+                <i class="fas fa-home"></i> Vissza a főoldalra
+            </button>
+        </div>
+    </div>
+
+    <section id="home" class="hero-section">
+        <div class="hero-content">
+            <h1 class="glitch-effect" data-text="PARTYSCHEDULE">PARTYSCHEDULE</h1>
+            <p>FELEJTHETETLEN ÉLMÉNYEK × TÖKÉLETES RENDEZVÉNYEK</p>
+            <button class="btn btn-hero" onclick="document.getElementById('contact').scrollIntoView({behavior: 'smooth'})">
+                <i class="fas fa-rocket"></i> KÉRJEN AJÁNLATOT
+            </button>
+        </div>
+    </section>
+
+    <section id="services" class="container">
+        <h2 class="section-title">SZOLGÁLTATÁSOK</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="service-box text-center">
+                    <i class="fas fa-birthday-cake"></i>
+                    <h3>Születésnapi Bulik</h3>
+                    <p>Tegye emlékezetessé az ünnepet! Teljes körű szervezés, futurisztikus dekoráció, animátorok és prémium catering szolgáltatás. Minden részlet tökéletes lesz!</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-box text-center">
+                    <i class="fas fa-rings-wedding"></i>
+                    <h3>Esküvők</h3>
+                    <p>Álmai esküvője valóra válik! Exkluzív helyszínek, káprázatos díszítés, precíz koordináció és minden, ami szükséges a tökéletes naphoz. Mesebeli élmény garantálva!</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-box text-center">
+                    <i class="fas fa-briefcase"></i>
+                    <h3>Céges Rendezvények</h3>
+                    <p>Professzionális high-tech szervezés konferenciákhoz, csapatépítőkhöz és céges ünnepségekhez. A siker kulcsa a részletekben rejlik!</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-box text-center">
+                    <i class="fas fa-music"></i>
+                    <h3>Koncertek & Fesztiválok</h3>
+                    <p>Nagy rendezvények szervezése, profi technikai háttér és teljes logisztika. Több ezer fős eventektől a VIP partyig mindent megoldunk a legmagasabb színvonalon!</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-box text-center">
+                    <i class="fas fa-utensils"></i>
+                    <h3>Premium Catering</h3>
+                    <p>Michelin-csillagos minőség, egyedi menüösszeállítás bármilyen rendezvényre. Gourmet élmények, amelyek lenyűgözik vendégeit. A gasztronómia művészete!</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-box text-center">
+                    <i class="fas fa-camera"></i>
+                    <h3>Fotó & Videó</h3>
+                    <p>Hollywood-i színvonalú fotós és videós csapat, 8K felbontás, drón felvételek, hogy megörökítsük a legszebb pillanatokat. Filmszerű élmények!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery" class="container">
+        <h2 class="section-title">GALÉRIA</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="gallery-container">
+                    <img src="https://images.unsplash.com/photo-1519167758481-83f29da8a869?w=800" class="gallery-img" alt="Esküvő">
+                    <div class="gallery-overlay">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="gallery-container">
+                    <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800" class="gallery-img" alt="Születésnap">
+                    <div class="gallery-overlay">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="gallery-container">
+                    <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800" class="gallery-img" alt="Céges">
+                    <div class="gallery-overlay">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="gallery-container">
+                    <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800" class="gallery-img" alt="Koncert">
+                    <div class="gallery-overlay">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="gallery-container">
+                    <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800" class="gallery-img" alt="Catering">
+                    <div class="gallery-overlay">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="gallery-container">
+                    <img src="https://images.unsplash.com/photo-1478146896981-b80fe463b330?w=800" class="gallery-img" alt="Party">
+                    <div class="gallery-overlay">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="prices" class="container">
+        <h2 class="section-title">ÁRLISTA</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="price-card text-center">
+                    <h3><i class="fas fa-star"></i> ALAP</h3>
+                    <div class="price">250.000 Ft</div>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Helyszín koordináció</li>
+                        <li><i class="fas fa-check-circle"></i> Modern dekoráció</li>
+                        <li><i class="fas fa-check-circle"></i> 4 óra rendezvény</li>
+                        <li><i class="fas fa-check-circle"></i> 50 fő vendég</li>
+                        <li><i class="fas fa-check-circle"></i> Profi hangrendszer</li>
+                        <li><i class="fas fa-check-circle"></i> Alapvető LED világítás</li>
+                    </ul>
+                    <button class="btn btn-hero mt-4" onclick="addToCart('ALAP', 250000)"><i class="fas fa-rocket"></i> VÁLASZTOM</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="price-card text-center featured">
+                    <h3><i class="fas fa-gem"></i> PRÉMIUM</h3>
+                    <div class="price">450.000 Ft</div>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Teljes event koordináció</li>
+                        <li><i class="fas fa-check-circle"></i> Futurisztikus dekoráció</li>
+                        <li><i class="fas fa-check-circle"></i> 6 óra rendezvény</li>
+                        <li><i class="fas fa-check-circle"></i> 100 fő vendég</li>
+                        <li><i class="fas fa-check-circle"></i> High-end hangrendszer + DJ</li>
+                        <li><i class="fas fa-check-circle"></i> Profi fotós szolgáltatás</li>
+                        <li><i class="fas fa-check-circle"></i> Gourmet catering</li>
+                        <li><i class="fas fa-check-circle"></i> Színpadi LED fények</li>
+                    </ul>
+                    <button class="btn btn-hero mt-4" onclick="addToCart('PRÉMIUM', 450000)"><i class="fas fa-rocket"></i> VÁLASZTOM</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="price-card text-center">
+                    <h3><i class="fas fa-crown"></i> VIP</h3>
+                    <div class="price">850.000 Ft</div>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Exkluzív luxus helyszín</li>
+                        <li><i class="fas fa-check-circle"></i> Ultra-premium dekoráció</li>
+                        <li><i class="fas fa-check-circle"></i> Korlátlan időtartam</li>
+                        <li><i class="fas fa-check-circle"></i> 200+ fő vendég</li>
+                        <li><i class="fas fa-check-circle"></i> Teljes technikai háttér</li>
+                        <li><i class="fas fa-check-circle"></i> Fotó + videó csapat 8K</li>
+                        <li><i class="fas fa-check-circle"></i> Michelin catering</li>
+                        <li><i class="fas fa-check-circle"></i> Személyes VIP koordinátor</li>
+                        <li><i class="fas fa-check-circle"></i> Holografikus effektek</li>
+                        <li><i class="fas fa-check-circle"></i> Drón show</li>
+                    </ul>
+                    <button class="btn btn-hero mt-4" onclick="addToCart('VIP', 850000)"><i class="fas fa-rocket"></i> VÁLASZTOM</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="container">
+        <h2 class="section-title">KAPCSOLAT</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="contact-box text-center">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h4>TELEFON</h4>
+                    <p>+36 30 123 4567</p>
+                    <p>+36 20 987 6543</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-box text-center">
+                    <i class="fas fa-envelope-open-text"></i>
+                    <h4>EMAIL</h4>
+                    <p>info@partyschedule.hu</p>
+                    <p>events@partyschedule.hu</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-box text-center">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h4>CÍM</h4>
+                    <p>1051 Budapest</p>
+                    <p>Deák Ferenc utca 15.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <div class="contact-box">
+                    <h3 class="text-center mb-4" style="font-size: 2.5rem; letter-spacing: 3px;"><i class="fas fa-paper-plane"></i> ÍRJON NEKÜNK!</h3>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <input type="text" class="form-control" placeholder="NÉV">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <input type="email" class="form-control" placeholder="EMAIL">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <input type="text" class="form-control" placeholder="TÁRGY">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <textarea class="form-control" rows="6" placeholder="ÜZENET"></textarea>
+                        </div>
+                        <div class="col-md-12 text-center">
+                            <button class="btn btn-hero"><i class="fas fa-rocket"></i> KÜLDÉS</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container text-center">
+            <h4><i class="fas fa-bolt"></i> PARTYSCHEDULE</h4>
+            <p style="font-size: 1.2rem; letter-spacing: 2px; margin-top: 20px;">TEGYE EMLÉKEZETESSÉ MINDEN PILLANATÁT</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <p style="margin-top: 40px; color: #888;">&copy; 2024 PARTYSCHEDULE. MINDEN JOG FENNTARTVA.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const particlesContainer = document.getElementById('particles');
+        for(let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        let cart = [];
+        let selectedPayment = '';
+
+        function toggleCart() {
+            const sidebar = document.getElementById('cartSidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        function addToCart(packageName, price) {
+            const existingItem = cart.find(item => item.name === packageName);
+            
+            if (existingItem) {
+                alert('Ez a csomag már a kosárban van!');
+                return;
+            }
+
+            cart.push({
+                name: packageName,
+                price: price
+            });
+
+            updateCart();
+            toggleCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItems = document.getElementById('cartItems');
+            const cartBadge = document.getElementById('cartBadge');
+            const cartTotal = document.getElementById('cartTotal');
+            const totalPrice = document.getElementById('totalPrice');
+
+            cartBadge.textContent = cart.length;
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>A kosár üres</p>
+                    </div>
+                `;
+                cartTotal.style.display = 'none';
+            } else {
+                let total = 0;
+                cartItems.innerHTML = '';
+
+                cart.forEach((item, index) => {
+                    total += item.price;
+                    cartItems.innerHTML += `
+                        <div class="cart-item">
+                            <h4>${item.name} Csomag</h4>
+                            <div class="cart-item-price">${item.price.toLocaleString()} Ft</div>
+                            <button class="remove-item" onclick="removeFromCart(${index})">
+                                <i class="fas fa-trash"></i> Eltávolítás
+                            </button>
+                        </div>
+                    `;
+                });
+
+                totalPrice.textContent = total.toLocaleString();
+                cartTotal.style.display = 'block';
+            }
+        }
+
+        function openCheckout() {
+            if (cart.length === 0) {
+                alert('A kosár üres!');
+                return;
+            }
+            document.getElementById('checkoutOverlay').classList.add('active');
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutOverlay').classList.remove('active');
+        }
+
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.target.closest('.payment-option').classList.add('selected');
+        }
+
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!selectedPayment) {
+                alert('Kérjük, válasszon fizetési módot!');
+                return;
+            }
+
+            closeCheckout();
+            document.getElementById('successOverlay').classList.add('active');
+            
+            cart = [];
+            updateCart();
+            toggleCart();
+        });
+
+        function closeSuccess() {
+            document.getElementById('successOverlay').classList.remove('active');
+            document.getElementById('home').scrollIntoView({behavior: 'smooth'});
+        }
+    </script>
+
+</body>
+</html>
