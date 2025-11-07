@@ -159,38 +159,93 @@
                 right: -100%;
             }
             
+            .hero-section {
+                min-height: 100vh;
+                height: auto;
+                padding: 80px 15px;
+            }
+            
             .hero-section h1 {
-                font-size: 3rem !important;
-                padding: 0 15px;
+                font-size: 2.5rem !important;
+                padding: 0;
+                word-break: break-word;
+                line-height: 1.2;
             }
 
             .hero-section p {
-                font-size: 1.2rem !important;
-                padding: 0 15px;
+                font-size: 1rem !important;
+                padding: 0;
+                margin: 20px 0;
             }
 
             .btn-hero {
-                padding: 15px 30px !important;
-                font-size: 1.1rem !important;
+                padding: 12px 25px !important;
+                font-size: 1rem !important;
+                white-space: normal;
+                width: 100%;
+                max-width: 280px;
             }
 
             .service-box,
             .contact-box,
             .price-card {
-                margin: 15px 0;
-                padding: 20px;
+                margin: 10px 0;
+                padding: 15px;
+                width: 100%;
             }
 
             .gallery-container {
                 margin: 10px 0;
             }
 
+            .social-icons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
             .social-icons a {
-                width: 45px;
-                height: 45px;
-                line-height: 45px;
-                font-size: 1.4rem;
-                margin: 0 8px;
+                width: 40px;
+                height: 40px;
+                line-height: 40px;
+                font-size: 1.2rem;
+                margin: 5px;
+            }
+
+            .container {
+                padding-left: 15px;
+                padding-right: 15px;
+                max-width: 100%;
+                overflow-x: hidden;
+            }
+
+            .row {
+                margin-left: -10px;
+                margin-right: -10px;
+            }
+
+            .col-md-4 {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .price-card ul {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .price-card ul li {
+                font-size: 0.9rem;
+                padding: 10px 0;
+            }
+
+            .gallery-img {
+                height: 250px;
+            }
+
+            .section-title {
+                font-size: 2rem !important;
+                margin: 40px 0 30px !important;
+                word-break: break-word;
             }
         }
         
@@ -345,6 +400,7 @@
             .checkout-panel {
                 padding: 20px;
                 width: 95%;
+                margin: 15px auto;
             }
 
             .payment-method {
@@ -362,6 +418,7 @@
                 width: 100%;
                 padding: 12px;
                 font-size: 1rem;
+                margin: 5px 0;
             }
 
             .form-control {
@@ -371,15 +428,42 @@
 
             .nav-link {
                 margin: 5px 0;
-                font-size: 1.1rem;
+                font-size: 1rem;
+                text-align: center;
             }
 
             .navbar-brand {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
             }
 
             .cart-icon {
-                margin-left: 15px;
+                margin-left: 10px;
+            }
+
+            .navbar {
+                padding: 10px 0;
+            }
+
+            .cart-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .cart-item h4 {
+                font-size: 1.1rem;
+            }
+
+            .cart-item-price {
+                font-size: 1.2rem;
+            }
+            
+            body {
+                overflow-x: hidden;
+                width: 100%;
+            }
+
+            html {
+                overflow-x: hidden;
+                width: 100%;
             }
         }
         
@@ -1364,24 +1448,26 @@
         <div class="row mt-5">
             <div class="col-md-12">
                 <div class="contact-box">
-                    <h3 class="text-center mb-4" style="font-size: 2.5rem; letter-spacing: 3px;"><i class="fas fa-paper-plane"></i> ÍRJON NEKÜNK!</h3>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <input type="text" class="form-control" placeholder="NÉV">
+                    <h3 class="text-center mb-4" style="font-size: 2.5rem; letter-spacing: 3px;"><i class="fas fa-paper-plane" style="font-size: 1.8rem;"></i> ÍRJON NEKÜNK!</h3>
+                    <form id="contactForm" onsubmit="submitContactForm(event)">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <input type="text" name="name" class="form-control" placeholder="NÉV" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <input type="email" name="email" class="form-control" placeholder="EMAIL" required>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <input type="text" name="subject" class="form-control" placeholder="TÁRGY" required>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <textarea name="message" class="form-control" rows="6" placeholder="ÜZENET" required></textarea>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button type="submit" class="btn btn-hero"><i class="fas fa-rocket"></i> KÜLDÉS</button>
+                            </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <input type="email" class="form-control" placeholder="EMAIL">
-                        </div>
-                        <div class="col-md-12 mb-3">
-                            <input type="text" class="form-control" placeholder="TÁRGY">
-                        </div>
-                        <div class="col-md-12 mb-3">
-                            <textarea class="form-control" rows="6" placeholder="ÜZENET"></textarea>
-                        </div>
-                        <div class="col-md-12 text-center">
-                            <button class="btn btn-hero"><i class="fas fa-rocket"></i> KÜLDÉS</button>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -1413,6 +1499,28 @@
             particle.style.animationDelay = Math.random() * 15 + 's';
             particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
             particlesContainer.appendChild(particle);
+        }
+
+        // Kapcsolat űrlap kezelése
+        function submitContactForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            // Űrlap adatainak összegyűjtése
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                subject: formData.get('subject'),
+                message: formData.get('message')
+            };
+
+            // Itt később implementálható a backend-es küldés
+            console.log('Űrlap adatok:', data);
+
+            // Sikeres küldés visszajelzése
+            alert('Köszönjük üzenetét! Hamarosan felvesszük Önnel a kapcsolatot.');
+            form.reset();
         }
 
         let cart = [];
@@ -1508,6 +1616,98 @@
             
             if (!selectedPayment) {
                 alert('Kérjük, válasszon fizetési módot!');
+                return;
+            }
+
+            if (selectedPayment === 'transfer') {
+                // Banki adatok megjelenítése
+                const totalAmount = document.getElementById('totalPrice').textContent;
+                const bankDetails = `
+                    Kedvezményezett: PartySchedule Kft.
+                    Bankszámlaszám: 11111111-22222222-33333333
+                    Összeg: ${totalAmount} Ft
+                    Közlemény: PS-${Date.now().toString().slice(-8)}
+                `;
+                
+                // Banki adatok új ablakban
+                const bankWindow = window.open('', '_blank', 'width=400,height=600');
+                bankWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Banki átutalás</title>
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                                padding: 20px;
+                                background: #f5f5f5;
+                                line-height: 1.6;
+                            }
+                            .bank-details {
+                                background: white;
+                                padding: 20px;
+                                border-radius: 10px;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                                margin-bottom: 20px;
+                            }
+                            .bank-info {
+                                margin: 10px 0;
+                                padding: 10px;
+                                background: #f8f9fa;
+                                border-radius: 5px;
+                            }
+                            .important {
+                                color: #dc3545;
+                                font-weight: bold;
+                            }
+                            .copy-btn {
+                                background: #0589ce;
+                                color: white;
+                                border: none;
+                                padding: 10px 20px;
+                                border-radius: 5px;
+                                cursor: pointer;
+                                margin: 5px 0;
+                                width: 100%;
+                            }
+                            .copy-btn:hover {
+                                background: #0472a7;
+                            }
+                            .qr-placeholder {
+                                width: 200px;
+                                height: 200px;
+                                background: #ddd;
+                                margin: 20px auto;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                border-radius: 10px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="bank-details">
+                            <h2>Banki átutalás adatai</h2>
+                            <div class="bank-info">
+                                <p><strong>Kedvezményezett:</strong><br>PartySchedule Kft.</p>
+                                <p><strong>Bankszámlaszám:</strong><br>11111111-22222222-33333333</p>
+                                <p><strong>Összeg:</strong><br>${totalAmount} Ft</p>
+                                <p><strong>Közlemény:</strong><br>PS-${Date.now().toString().slice(-8)}</p>
+                            </div>
+                            <p class="important">Kérjük, az utalásnál pontosan adja meg a közleményt!</p>
+                            <button class="copy-btn" onclick="navigator.clipboard.writeText('11111111-22222222-33333333')">
+                                Bankszámlaszám másolása
+                            </button>
+                            <div class="qr-placeholder">
+                                QR kód helye<br>(banki utaláshoz)
+                            </div>
+                            <p><small>Az utalás beérkezése után értesítést küldünk.</small></p>
+                        </div>
+                    </body>
+                    </html>
+                `);
+            } else if (selectedPayment === 'card') {
+                alert('A bankkártyás fizetési funkció jelenleg fejlesztés alatt áll. Kérjük, válassza az átutalást.');
                 return;
             }
 
